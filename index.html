@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สูตรอาหารจากทั่วโลก - Global Recipe Collection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans Thai', sans-serif;
+        }
+        
+        .recipe-card {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .recipe-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .country-flag {
+            font-size: 2rem;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        .recipe-title {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin: 20px;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .steam-animation {
+            animation: steam 3s ease-in-out infinite;
+        }
+        
+        @keyframes steam {
+            0%, 100% { opacity: 0.6; transform: translateY(0) scale(1); }
+            50% { opacity: 0.9; transform: translateY(-5px) scale(1.1); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Header with New Recipe App Logo -->
+    <header class="text-center py-12">
+        <div class="floating-animation inline-block">
+            <!-- Recipe App Logo SVG -->
+            <div class="mb-6">
+                <svg width="140" height="140" viewBox="0 0 140 140" class="mx-auto drop-shadow-2xl">
+                    <!-- Background Circle -->
+                    <circle cx="70" cy="70" r="65" fill="url(#appGradient)" stroke="white" stroke-width="4"/>
+                    
+                    <!-- Cooking Pot -->
+                    <ellipse cx="70" cy="85" rx="25" ry="8" fill="url(#potGradient)"/>
+                    <rect x="45" y="60" width="50" height="25" rx="5" fill="url(#potGradient)"/>
+                    <rect x="42" y="58" width="56" height="4" rx="2" fill="#8B4513"/>
+                    
+                    <!-- Pot Handles -->
+                    <ellipse cx="40" cy="70" rx="3" ry="8" fill="none" stroke="#8B4513" stroke-width="3"/>
+                    <ellipse cx="100" cy="70" rx="3" ry="8" fill="none" stroke="#8B4513" stroke-width="3"/>
+                    
+                    <!-- Steam Rising -->
+                    <g class="steam-animation">
+                        <path d="M 60 50 Q 58 40 62 35 Q 66 30 64 25" stroke="white" stroke-width="2" fill="none" opacity="0.8"/>
+                        <path d="M 70 50 Q 72 40 68 35 Q 64 30 66 25" stroke="white" stroke-width="2" fill="none" opacity="0.8"/>
+                        <path d="M 80 50 Q 78 40 82 35 Q 86 30 84 25" stroke="white" stroke-width="2" fill="none" opacity="0.8"/>
+                    </g>
+                    
+                    <!-- Recipe Book Pages -->
+                    <g transform="translate(25, 25)">
+                        <rect x="0" y="0" width="20" height="15" rx="2" fill="white" opacity="0.9"/>
+                        <line x1="3" y1="4" x2="17" y2="4" stroke="#666" stroke-width="1"/>
+                        <line x1="3" y1="7" x2="15" y2="7" stroke="#666" stroke-width="1"/>
+                        <line x1="3" y1="10" x2="17" y2="10" stroke="#666" stroke-width="1"/>
+                    </g>
+                    
+                    <g transform="translate(95, 30)">
+                        <rect x="0" y="0" width="20" height="15" rx="2" fill="white" opacity="0.9"/>
+                        <line x1="3" y1="4" x2="17" y2="4" stroke="#666" stroke-width="1"/>
+                        <line x1="3" y1="7" x2="15" y2="7" stroke="#666" stroke-width="1"/>
+                        <line x1="3" y1="10" x2="17" y2="10" stroke="#666" stroke-width="1"/>
+                    </g>
+                    
+                    <!-- Cooking Utensils -->
+                    <g transform="translate(20, 90)">
+                        <!-- Spoon -->
+                        <ellipse cx="5" cy="5" rx="4" ry="6" fill="white"/>
+                        <rect x="3" y="11" width="4" height="15" fill="white"/>
+                    </g>
+                    
+                    <g transform="translate(115, 90)">
+                        <!-- Fork -->
+                        <rect x="0" y="0" width="1.5" height="12" fill="white"/>
+                        <rect x="3" y="0" width="1.5" height="12" fill="white"/>
+                        <rect x="6" y="0" width="1.5" height="12" fill="white"/>
+                        <rect x="0" y="12" width="7.5" height="15" fill="white"/>
+                    </g>
+                    
+                    <!-- Food Icons -->
+                    <text x="30" y="110" font-size="16" fill="white">🍳</text>
+                    <text x="105" y="110" font-size="16" fill="white">🥄</text>
+                    <text x="110" y="50" font-size="14" fill="white">🍽️</text>
+                    <text x="25" y="55" font-size="14" fill="white">👨‍🍳</text>
+                    
+                    <!-- App Name Ribbon -->
+                    <rect x="20" y="100" width="100" height="20" rx="10" fill="rgba(255,255,255,0.2)" stroke="white" stroke-width="1"/>
+                    <text x="70" y="113" text-anchor="middle" font-size="12" fill="white" font-weight="bold">RECIPE APP</text>
+                    
+                    <!-- Gradient Definitions -->
+                    <defs>
+                        <linearGradient id="appGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#ffa726;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#ff8a65;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="potGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#424242;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#616161;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            
+            <h1 class="text-5xl font-bold text-white recipe-title mb-4">
+                สูตรอาหารจากทั่วโลก
+            </h1>
+            <p class="text-xl text-white/90 max-w-2xl mx-auto px-4">
+                ค้นพบรสชาติแห่งโลกกว้าง พร้อมสูตรอาหารดั้งเดิมจากทุกทวีป
+            </p>
+        </div>
+    </header>
+
+    <!-- Filter Buttons -->
+    <div class="flex flex-wrap justify-center gap-4 mb-12 px-4">
+        <button onclick="filterRecipes('all')" class="filter-btn bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium hover:bg-white/30 transition-all duration-300 border border-white/30">
+            🌍 ทั้งหมด
+        </button>
+        <button onclick="filterRecipes('asia')" class="filter-btn bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium hover:bg-white/30 transition-all duration-300 border border-white/30">
+            🥢 เอเชีย
+        </button>
+        <button onclick="filterRecipes('europe')" class="filter-btn bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium hover:bg-white/30 transition-all duration-300 border border-white/30">
+            🍝 ยุโรป
+        </button>
+        <button onclick="filterRecipes('america')" class="filter-btn bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium hover:bg-white/30 transition-all duration-300 border border-white/30">
+            🌮 อเมริกา
+        </button>
+        <button onclick="filterRecipes('africa')" class="filter-btn bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-medium hover:bg-white/30 transition-all duration-300 border border-white/30">
+            🍲 แอฟริกา
+        </button>
+    </div>
+
+    <!-- Recipe Grid -->
+    <div class="container mx-auto px-4 pb-16">
+        <div id="recipe-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Recipe Cards will be generated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Recipe Modal -->
+    <div id="recipe-modal" class="modal">
+        <div class="modal-content">
+            <div id="modal-body">
+                <!-- Modal content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const recipes = [
+            {
+                id: 1,
+                name: "ผัดไทย",
+                country: "ไทย",
+                flag: "🇹🇭",
+                region: "asia",
+                time: "20 นาที",
+                difficulty: "ง่าย",
+                description: "เส้นผัดไทยรสชาติหวานเปรี้ยว อาหารไทยที่โด่งดังไปทั่วโลก",
+                ingredients: [
+                    "เส้นจันทน์ 200 กรัม",
+                    "กุ้งสด 150 กรัม", 
+                    "ไข่ไก่ 2 ฟอง",
+                    "ถั่วงอก 100 กรัม",
+                    "หัวไชโป๊ว 2 ช้อนโต๊ะ",
+                    "น้ำตาลปี๊บ 3 ช้อนโต๊ะ",
+                    "น้ำปลา 2 ช้อนโต๊ะ",
+                    "น้ำมะขามเปียก 3 ช้อนโต๊ะ"
+                ],
+                instructions: [
+                    "แช่เส้นจันทน์ในน้ำอุ่นจนนิ่ม",
+                    "ผัดกุ้งกับไข่ในกระทะร้อน",
+                    "ใส่เส้นจันทน์และปรุงรส",
+                    "ใส่ถั่วงอกและหัวไชโป๊ว",
+                    "ผัดจนเข้ากัน เสิร์ฟพร้อมมะนาว"
+                ]
+            },
+            {
+                id: 2,
+                name: "Spaghetti Carbonara",
+                country: "อิตาลี",
+                flag: "🇮🇹",
+                region: "europe",
+                time: "25 นาที",
+                difficulty: "ปานกลาง",
+                description: "พาสต้าครีมี่คลาสสิกจากกรุงโรม ด้วยไข่และชีส",
+                ingredients: [
+                    "สปาเก็ตตี้ 400 กรัม",
+                    "เบคอน 150 กรัม",
+                    "ไข่แดง 4 ฟอง",
+                    "ชีสพาร์เมซาน 100 กรัม",
+                    "กระเทียม 2 กลีบ",
+                    "พริกไทยดำ",
+                    "เกลือ"
+                ],
+                instructions: [
+                    "ต้มสปาเก็ตตี้ในน้ำเกลือ",
+                    "ผัดเบคอนจนกรอบ",
+                    "ผสมไข่แดงกับชีส",
+                    "ผสมเส้นร้อนกับส่วนผสมไข่",
+                    "คนเร็วๆ ให้ครีมี่ เสิร์ฟทันที"
+                ]
+            },
+            {
+                id: 3,
+                name: "Sushi Roll",
+                country: "ญี่ปุ่น",
+                flag: "🇯🇵",
+                region: "asia",
+                time: "45 นาที",
+                difficulty: "ยาก",
+                description: "ซูชิม้วนแบบดั้งเดิม สดใหม่และอร่อย",
+                ingredients: [
+                    "ข้าวซูชิ 2 ถ้วย",
+                    "สาหร่ายนอริ 4 แผ่น",
+                    "ปลาแซลมอนสด 200 กรัม",
+                    "อะโวคาโด 1 ลูก",
+                    "แตงกวา 1 ลูก",
+                    "วาซาบิ",
+                    "ขิงดอง",
+                    "ซีอิ๊วญี่ปุ่น"
+                ],
+                instructions: [
+                    "เตรียมข้าวซูชิให้เย็น",
+                    "วางสาหร่ายบนเสื่อม้วน",
+                    "ปูข้าวบนสาหร่าย",
+                    "วางไส้ตรงกลาง",
+                    "ม้วนแน่นและหั่นเสิร์ฟ"
+                ]
+            },
+            {
+                id: 4,
+                name: "Tacos al Pastor",
+                country: "เม็กซิโก",
+                flag: "🇲🇽",
+                region: "america",
+                time: "30 นาที",
+                difficulty: "ปานกลาง",
+                description: "ทาโก้สไตล์เม็กซิกัน หมักหมูย่างรสจัดจ้าน",
+                ingredients: [
+                    "เนื้อหมู 500 กรัม",
+                    "แป้งทอร์ติญ่า 8 แผ่น",
+                    "สับปะรด 1 ถ้วย",
+                    "หอมแดง 1 หัว",
+                    "ผักชี 1 ถ้วย",
+                    "มะนาว 2 ลูก",
+                    "พริกชิลี่",
+                    "เครื่องเทศเม็กซิกัน"
+                ],
+                instructions: [
+                    "หมักเนื้อหมูด้วยเครื่องเทศ",
+                    "ย่างเนื้อจนสุก",
+                    "อุ่นแป้งทอร์ติญ่า",
+                    "ใส่เนื้อและผักลงในแป้ง",
+                    "เสิร์ฟพร้อมมะนาวและซอส"
+                ]
+            },
+            {
+                id: 5,
+                name: "Coq au Vin",
+                country: "ฝรั่งเศส",
+                flag: "🇫🇷",
+                region: "europe",
+                time: "90 นาที",
+                difficulty: "ยาก",
+                description: "ไก่ตุ๋นไวน์แดงสไตล์ฝรั่งเศส หอมหวานเข้มข้น",
+                ingredients: [
+                    "ไก่ตัดชิ้น 1 ตัว",
+                    "ไวน์แดง 500 มล.",
+                    "เบคอน 100 กรัม",
+                    "เห็ดเนื้อ 200 กรัม",
+                    "หอมใหญ่เล็ก 12 หัว",
+                    "แครอท 2 หัว",
+                    "กระเทียม 4 กลีบ",
+                    "เครื่องเทศฝรั่งเศส"
+                ],
+                instructions: [
+                    "ผัดเบคอนจนกรอบ",
+                    "ผัดไก่จนเหลือง",
+                    "เติมไวน์แดงและตุ๋น",
+                    "ใส่ผักและเครื่องเทศ",
+                    "ตุ๋นต่อจนเนื้อนิ่ม"
+                ]
+            },
+            {
+                id: 6,
+                name: "Jollof Rice",
+                country: "ไนจีเรีย",
+                flag: "🇳🇬",
+                region: "africa",
+                time: "40 นาที",
+                difficulty: "ปานกลาง",
+                description: "ข้าวผัดแอฟริกันสีแดงสวย รสชาติเข้มข้น",
+                ingredients: [
+                    "ข้าวหอมมะลิ 2 ถ้วย",
+                    "มะเขือเทศ 4 ลูก",
+                    "พริกแดง 2 เม็ด",
+                    "หอมใหญ่ 1 หัว",
+                    "กระเทียม 3 กลีบ",
+                    "น้ำซุปไก่ 3 ถ้วย",
+                    "เครื่องเทศแอฟริกัน",
+                    "น้ำมันปาล์ม"
+                ],
+                instructions: [
+                    "ปั่นมะเขือเทศและพริก",
+                    "ผัดหอมใหญ่และกระเทียม",
+                    "ใส่ส่วนผสมมะเขือเทศ",
+                    "เติมข้าวและน้ำซุป",
+                    "ตุ๋นจนข้าวสุกและแห้ง"
+                ]
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        function renderRecipes(recipesToShow = recipes) {
+            const grid = document.getElementById('recipe-grid');
+            grid.innerHTML = '';
+
+            recipesToShow.forEach(recipe => {
+                const card = document.createElement('div');
+                card.className = `recipe-card rounded-2xl p-6 text-white cursor-pointer transform transition-all duration-300 ${recipe.region}`;
+                card.onclick = () => openRecipeModal(recipe);
+                
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="country-flag">${recipe.flag}</span>
+                        <div class="text-right">
+                            <div class="text-sm opacity-80">${recipe.time}</div>
+                            <div class="text-xs opacity-60">${recipe.difficulty}</div>
+                        </div>
+                    </div>
+                    <h3 class="recipe-title text-2xl font-bold mb-2">${recipe.name}</h3>
+                    <p class="text-sm opacity-90 mb-4">${recipe.country}</p>
+                    <p class="text-sm opacity-80 leading-relaxed">${recipe.description}</p>
+                    <div class="mt-4 pt-4 border-t border-white/20">
+                        <span class="text-xs bg-white/20 px-3 py-1 rounded-full">คลิกเพื่อดูสูตร</span>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function filterRecipes(region) {
+            currentFilter = region;
+            
+            // Update button styles
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-white/40');
+                btn.classList.add('bg-white/20');
+            });
+            event.target.classList.remove('bg-white/20');
+            event.target.classList.add('bg-white/40');
+
+            // Filter and render recipes
+            const filteredRecipes = region === 'all' 
+                ? recipes 
+                : recipes.filter(recipe => recipe.region === region);
+            
+            renderRecipes(filteredRecipes);
+        }
+
+        function openRecipeModal(recipe) {
+            const modal = document.getElementById('recipe-modal');
+            const modalBody = document.getElementById('modal-body');
+            
+            modalBody.innerHTML = `
+                <div class="p-8">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="text-4xl">${recipe.flag}</span>
+                                <h2 class="recipe-title text-3xl font-bold text-gray-800">${recipe.name}</h2>
+                            </div>
+                            <p class="text-gray-600 mb-2">${recipe.country}</p>
+                            <div class="flex gap-4 text-sm text-gray-500">
+                                <span>⏱️ ${recipe.time}</span>
+                                <span>📊 ${recipe.difficulty}</span>
+                            </div>
+                        </div>
+                        <button onclick="closeRecipeModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">×</button>
+                    </div>
+                    
+                    <p class="text-gray-700 mb-6 leading-relaxed">${recipe.description}</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">🛒 วัตถุดิบ</h3>
+                            <ul class="space-y-2">
+                                ${recipe.ingredients.map(ingredient => 
+                                    `<li class="flex items-center gap-2 text-gray-700">
+                                        <span class="w-2 h-2 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full"></span>
+                                        ${ingredient}
+                                    </li>`
+                                ).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">👨‍🍳 วิธีทำ</h3>
+                            <ol class="space-y-3">
+                                ${recipe.instructions.map((step, index) => 
+                                    `<li class="flex gap-3 text-gray-700">
+                                        <span class="flex-shrink-0 w-6 h-6 bg-gradient-to-r from-pink-400 to-purple-400 text-white text-sm rounded-full flex items-center justify-center font-medium">
+                                            ${index + 1}
+                                        </span>
+                                        <span class="leading-relaxed">${step}</span>
+                                    </li>`
+                                ).join('')}
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200 text-center">
+                        <button onclick="closeRecipeModal()" class="bg-gradient-to-r from-pink-400 to-purple-400 text-white px-8 py-3 rounded-full font-medium hover:shadow-lg transition-all duration-300">
+                            ปิดสูตร
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        function closeRecipeModal() {
+            const modal = document.getElementById('recipe-modal');
+            modal.classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('recipe-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeRecipeModal();
+            }
+        });
+
+        // Initialize the page
+        renderRecipes();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9693298cb32b10fc',t:'MTc1NDE5NjI5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
